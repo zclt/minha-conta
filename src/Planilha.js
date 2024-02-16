@@ -8,7 +8,7 @@ function Planilha() {
   const [show, setShow] = useState(false);
 
   const { data: lancamentos, refetch: refetchLancamentos } = useQuery('lancamentos', async () => {
-    const response = await axios.get('/Lancamento');
+    const response = await axios.get(`${process.env.REACT_APP_MINHA_CONTA_URI}/Lancamento`);
     return response.data;
   },
   {
@@ -17,7 +17,7 @@ function Planilha() {
 
   const { isSuccess: isSuccessAdd, mutate: AddLancamento, variables } = useMutation('lancamento', async () => {
     if(variables)
-      await axios.post('/Lancamento', variables);
+      await axios.post(`${process.env.REACT_APP_MINHA_CONTA_URI}/Lancamento`, variables);
   });
 
   function onSubmit(valor, descricao, data) {
