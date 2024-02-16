@@ -1,35 +1,33 @@
 import React, { useState, useEffect } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import axios from 'axios';
 import Lancamentos from './Lancamentos';
-import Valor from './Valor';
 import Form from './Form';
 
 function Planilha() {
-  const [valores, setValores] = useState([]);
   const [show, setShow] = useState(false);
+
+  const { data: lancamentos, refetch: refetchLancamentos } = useQuery('lancamentos', async () => {
+    const response = await axios.get('/Lancamento');
+    return response.data;
+  },
+  {
+    refetchOnWindowFocus: false
+  });
+
+  const { isSuccess: isSuccessAdd, mutate: AddLancamento, variables } = useMutation('lancamento', async () => {
+    if(variables)
+      await axios.post('/Lancamento', variables);
+  });
 
   function onSubmit(valor, descricao, data) {
     setShow(false);
-    setValores([...valores, new Valor(valor, descricao, data)]);
-  }
-
-  function clear() {
-    if (confirm('Limpar a lista')) {
-      setValores([]);
-      localStorage.setItem('planilha', []);
-    }
+    AddLancamento({ valor, descricao, data });
   }
 
   useEffect(() => {
-    if (valores?.length > 0)
-      localStorage.setItem('planilha', JSON.stringify(valores));
-  }, [valores]);
-
-  useEffect(() => {
-    try {
-      const savedValores = JSON.parse(localStorage.getItem('planilha'));
-      if (savedValores) setValores(savedValores);
-    } catch {}
-  }, []);
+    if(isSuccessAdd)  refetchLancamentos();
+  }, [isSuccessAdd]);
 
   return (
     <div>
@@ -37,15 +35,14 @@ function Planilha() {
       {show ? (
         <Form onSubmit={onSubmit} />
       ) : (
-        <>
-          <button onClick={() => clear()}>Limpar</button>
+        <>          
           <button onClick={() => setShow(true)}>adicionar</button>
         </>
       )}
-      <Lancamentos title="Saídas" value={valores.filter((f) => f.valor <= 0)} />
+      <Lancamentos title="Saídas" value={lancamentos?.filter((f) => f.valor <= 0)} />
       <Lancamentos
         title="Entradas"
-        value={valores.filter((f) => f.valor > 0)}
+        value={lancamentos?.filter((f) => f.valor > 0)}
       />
     </div>
   );

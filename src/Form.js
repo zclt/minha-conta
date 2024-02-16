@@ -11,7 +11,7 @@ function Form({ onSubmit }) {
   };
 
   return (
-    <div class="form">
+    <div className="form">
       <form onSubmit={handleSubmit}>
         <label for="valor">Valor </label>
         <input
