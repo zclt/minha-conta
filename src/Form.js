@@ -37,8 +37,8 @@ function Form({ onSubmit }) {
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
-        <input type="submit" value="Salvar" />
         <button onClick={() => onSubmit()}>Cancelar</button>
+        <input type="submit" value="Salvar" />
       </form>
     </div>
   );
