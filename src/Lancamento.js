@@ -1,11 +1,13 @@
 import React from 'react';
+import * as moment from 'moment'
 
 function Lancamento({ value }) {
   return (
     <div className="lancamento">
-      <h3>R$ {parseFloat(value.valor).toFixed(2)}</h3>
+      <div className="lancamento-data">{moment(value.data).format("DD/MM/YY")}</div>
+      <h3>{value.descricao}</h3>
       <p>
-        {value.data} {value.descricao}
+        R$ {parseFloat(value.valor).toFixed(2)}
       </p>
     </div>
   );
