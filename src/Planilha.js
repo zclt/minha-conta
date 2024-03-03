@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
 import Lancamentos from './Lancamentos';
-import Form from './Form';
+import Spinner from 'react-bootstrap/Spinner';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 function Planilha() {
-  const [show, setShow] = useState(false);
+  const [formShow, setFormShow] = useState(false);
 
-  const { data: lancamentos, refetch: refetchLancamentos } = useQuery('lancamentos', async () => {
+  const { data: lancamentos, isLoading: isLoadingList, refetch: refetchLancamentos } = useQuery('lancamentos', async () => {
     const response = await axios.get('/Lancamento');
     return response.data;
   },
@@ -21,7 +24,7 @@ function Planilha() {
   });
 
   function onSubmit(valor, descricao, data) {
-    setShow(false);
+    setFormShow(false);
     AddLancamento({ valor, descricao, data });
   }
 
@@ -30,21 +33,24 @@ function Planilha() {
   }, [isSuccessAdd]);
 
   return (
-    <div>
-      <h1>Minha conta</h1>
-      {show ? (
-        <Form onSubmit={onSubmit} />
-      ) : (
-        <>          
-          <button onClick={() => setShow(true)}>adicionar</button>
-        </>
-      )}
-      <Lancamentos title="Saídas" value={lancamentos?.filter((f) => f.valor <= 0)} />
-      <Lancamentos
-        title="Entradas"
-        value={lancamentos?.filter((f) => f.valor > 0)}
-      />
-    </div>
+    <Container>
+      <Row>
+        <Col>
+          <Lancamentos
+            title="Entradas"
+            value={lancamentos?.filter((f) => f.valor > 0)}
+          />
+          { isLoadingList ? <Spinner animation="border" role="status" /> : <></> }
+        </Col>
+        <Col>
+          <Lancamentos
+            title="Saídas"
+            value={lancamentos?.filter((f) => f.valor <= 0)}
+          />
+          { isLoadingList ? <Spinner animation="border" role="status" /> : <></> }
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

@@ -1,15 +1,18 @@
 import React from 'react';
+import Card from 'react-bootstrap/Card';
 import * as moment from 'moment'
 
 function Lancamento({ value }) {
   return (
-    <div className="lancamento">
-      <div className="lancamento-data">{moment(value.data).format("DD/MM/YY")}</div>
-      <h3>{value.descricao}</h3>
-      <p>
-        R$ {parseFloat(value.valor).toFixed(2)}
-      </p>
-    </div>
+    <Card>
+      <Card.Body>
+        <Card.Title>R$ {parseFloat(value.valor).toFixed(2)}</Card.Title>
+        <Card.Text>
+        <div className="lancamento-data">{moment(value.data).format("DD/MM/YY")}</div>
+        {value.descricao}
+        </Card.Text>
+      </Card.Body>
+    </Card>
   );
 }
 
