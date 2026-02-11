@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Lancamentos from './Lancamentos';
 import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
 
 function Planilha() {
   const [formShow, setFormShow] = useState(false);
 
-  const { data: lancamentos, isLoading: isLoadingList, refetch: refetchLancamentos } = useQuery('lancamentos', async () => {
-    const response = await axios.get('/Lancamento');
-    return response.data;
-  },
-  {
+  const { data: lancamentos, isLoading: isLoadingList, refetch: refetchLancamentos } = useQuery({ 
+    queryKey: ['lancamentos'], 
+    queryFn: async () => {
+      const response = await axios.get('/api/lancamento');
+      return response.data;
+    },
     refetchOnWindowFocus: false
   });
 
-  const { isSuccess: isSuccessAdd, mutate: AddLancamento, variables } = useMutation('lancamento', async () => {
-    if(variables)
-      await axios.post('/Lancamento', variables);
-  });
+  const { isSuccess: isSuccessAdd, mutate: AddLancamento, isError, error } = useMutation({ mutationKey: ['addLancamento'], mutationFn: async (newLancamento) => {
+    const response = await axios.post('/api/lancamento', newLancamento);
+    return response.data;
+  }});
 
   function onSubmit(valor, descricao, data) {
     setFormShow(false);
@@ -34,6 +36,11 @@ function Planilha() {
 
   return (
     <Container>
+      {isError && (
+        <Alert variant="danger">
+          Erro ao salvar lançamento: {error?.message || 'Erro desconhecido'}
+        </Alert>
+      )}
       <Row>
         <Col>
           <Lancamentos
