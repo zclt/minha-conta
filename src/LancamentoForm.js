@@ -11,7 +11,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function LancamentoForm({ onSubmit }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    data: new Date().toISOString().split('T')[0]
+  });
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const valorInputRef = useRef(null);
