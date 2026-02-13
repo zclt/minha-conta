@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Lancamentos from './Lancamentos';
 import Spinner from 'react-bootstrap/Spinner';

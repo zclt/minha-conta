@@ -1,4 +1,3 @@
-import React from 'react';
 import Lancamento from './Lancamento';
 
 function Lancamentos({ title, value }) {
