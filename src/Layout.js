@@ -12,7 +12,6 @@ export default function Layout() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/">Home</Nav.Link>
                             <Nav.Link href="form-lancamento">Adicionar</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
