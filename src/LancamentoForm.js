@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Toast from 'react-bootstrap/Toast';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import Alert from 'react-bootstrap/Alert';
 
 function LancamentoForm({ onSubmit }) {
   const [formData, setFormData] = useState({});
@@ -21,9 +22,12 @@ function LancamentoForm({ onSubmit }) {
     AddLancamento({valor: formData.valor, descricao: formData.descricao, data: formData.data});
   };
 
-  const { isSuccess: isSuccessAdd, mutate: AddLancamento, variables } = useMutation('lancamento', async () => {
-    if(variables)
-      await axios.post('/Lancamento', variables);
+  const { isSuccess: isSuccessAdd, mutate: AddLancamento, isError, error } = useMutation({ 
+    mutationKey: ['createLancamento'], 
+    mutationFn: async (newLancamento) => {
+      const response = await axios.post('/api/lancamento', newLancamento);
+      return response.data;
+    }
   });
 
   useEffect(() => {
@@ -35,6 +39,11 @@ function LancamentoForm({ onSubmit }) {
       <Toast onClose={() => navigate("/")} show={showToast} delay={2000} autohide>
         <Toast.Body>Lançamento adicionado com sucesso!</Toast.Body>
       </Toast>
+      {isError && (
+        <Alert variant="danger">
+          Erro ao salvar lançamento: {error?.message || 'Erro desconhecido'}
+        </Alert>
+      )}
       <Form onSubmit={handleSubmit} className="form">
         <Form.Group className="mb-3" controlId="formValor">
           <Form.Label>Valor</Form.Label>
