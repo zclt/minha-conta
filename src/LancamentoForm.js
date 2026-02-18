@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Toast from 'react-bootstrap/Toast';
@@ -11,9 +11,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function LancamentoForm({ onSubmit }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    data: new Date().toISOString().split('T')[0]
+  });
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
+  const valorInputRef = useRef(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -37,6 +40,10 @@ function LancamentoForm({ onSubmit }) {
     setShowToast(isSuccessAdd);
   }, [isSuccessAdd]);
 
+  useEffect(() => {
+    valorInputRef.current?.focus();
+  }, []);
+
   return (
     <>
       <Toast onClose={() => navigate("/")} show={showToast} delay={2000} autohide>
@@ -59,6 +66,7 @@ function LancamentoForm({ onSubmit }) {
                 <Form.Group className="mb-3" controlId="formValor">
                   <Form.Label>Valor *</Form.Label>
                   <Form.Control
+                    ref={valorInputRef}
                     type="number"
                     step="0.01"
                     placeholder="0,00"
