@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Toast from 'react-bootstrap/Toast';
@@ -6,11 +6,17 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert';
+import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 function LancamentoForm({ onSubmit }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    data: new Date().toISOString().split('T')[0]
+  });
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
+  const valorInputRef = useRef(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -34,6 +40,10 @@ function LancamentoForm({ onSubmit }) {
     setShowToast(isSuccessAdd);
   }, [isSuccessAdd]);
 
+  useEffect(() => {
+    valorInputRef.current?.focus();
+  }, []);
+
   return (
     <>
       <Toast onClose={() => navigate("/")} show={showToast} delay={2000} autohide>
@@ -44,40 +54,66 @@ function LancamentoForm({ onSubmit }) {
           Erro ao salvar lançamento: {error?.message || 'Erro desconhecido'}
         </Alert>
       )}
-      <Form onSubmit={handleSubmit} className="form">
-        <Form.Group className="mb-3" controlId="formValor">
-          <Form.Label>Valor</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="Digite o valor..."
-            name="valor"
-            value={formData.valor}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formDescricao">
-          <Form.Label>Descrição</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Digite a descrição..."
-            name="descricao"
-            value={formData.descricao}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formData">
-          <Form.Label>Data</Form.Label>
-          <Form.Control
-            type="date"
-            name="data"
-            value={formData.data}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Salvar
-        </Button>
-      </Form>
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <Card className="shadow-sm" style={{ maxWidth: '600px', width: '100%' }}>
+          <Card.Header as="h5" className="bg-primary text-white">
+            Novo Lançamento
+          </Card.Header>
+          <Card.Body>
+          <Form onSubmit={handleSubmit}>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="formValor">
+                  <Form.Label>Valor *</Form.Label>
+                  <Form.Control
+                    ref={valorInputRef}
+                    type="number"
+                    step="0.01"
+                    placeholder="0,00"
+                    name="valor"
+                    value={formData.valor || ''}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="formData">
+                  <Form.Label>Data *</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="data"
+                    value={formData.data || ''}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Form.Group className="mb-4" controlId="formDescricao">
+              <Form.Label>Descrição *</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Descreva o lançamento..."
+                name="descricao"
+                value={formData.descricao || ''}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <div className="d-flex gap-2 justify-content-end">
+              <Button variant="secondary" onClick={() => navigate("/")}>
+                Cancelar
+              </Button>
+              <Button variant="primary" type="submit">
+                Salvar Lançamento
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
+      </div>
     </>
   );
 }
